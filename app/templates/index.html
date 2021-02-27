@@ -14,9 +14,27 @@ Password Generator
     <div class="forms my-3">
         <form action="{{ url_for('hash') }}" method="POST">
             {{ form.csrf_token }}
-            {{ wtf.form_field(form.masterpassword) }}
-            {{ wtf.form_field(form.username) }}
-            {{ wtf.form_field(form.website) }}
+            <div class="row">
+                <div class="col">
+                    {{ wtf.form_field(form.masterpassword) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{ wtf.form_field(form.username) }}
+                </div>
+                <div class="col">
+                    {{ wtf.form_field(form.website) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    {{ wtf.form_field(form.password_length_min) }}
+                </div>
+                <div class="col-6">
+                    {{ wtf.form_field(form.password_length_max) }}
+                </div>
+            </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
