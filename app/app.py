@@ -81,7 +81,6 @@ def hash():
         if not password_lenght:
             password_length_min = 10
             password_length_max = 25
-            print(password_lenght)
         
         if numbers:
             alphabet = alphabet + digits
@@ -93,5 +92,6 @@ def hash():
                 masterpassword, username, website, alphabet, password_length_min, password_length_max)
         
         return render_template("hash.html", password=password)
+        
     else:
         return redirect('/')
