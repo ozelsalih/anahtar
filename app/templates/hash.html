@@ -6,8 +6,13 @@ Password
 {% endblock %}
 {% block content %}
 <div class="container">
-    <h1 class="display-5 font-weight-bold">
+    <h1 class="display-5 font-weight-bold m-5">
         {{ password }}
     </h1>
 </div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/cyborg/bootstrap.min.css" integrity="sha384-nEnU7Ae+3lD52AK+RGNzgieBWMnEfgTbRHIwEvp1XXPdqdO6uLTd/NwXbzboqjc2" crossorigin="anonymous">
+
 {% endblock %}

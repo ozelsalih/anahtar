@@ -92,6 +92,6 @@ def hash():
                 masterpassword, username, website, alphabet, password_length_min, password_length_max)
         
         return render_template("hash.html", password=password)
-        
+
     else:
         return redirect('/')

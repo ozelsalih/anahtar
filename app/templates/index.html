@@ -1,9 +1,7 @@
 {% extends "bootstrap/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block head %}
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/cyborg/bootstrap.min.css" integrity="sha384-nEnU7Ae+3lD52AK+RGNzgieBWMnEfgTbRHIwEvp1XXPdqdO6uLTd/NwXbzboqjc2" crossorigin="anonymous">
-{% endblock %}
+
 
 
 {% block title %}
@@ -11,10 +9,12 @@ Password Generator
 {% endblock %}
 {% block content %}
 <div class="container">
-    <div class="hero my-3">
-        <h1 class="display-1 font-weight-bold">
-            Password Generator
-        </h1>
+    <div class="hero my-5 mx-0">
+        <div class="col text-center">
+            <h1 class="font-weight-bold">
+                Password Generator
+            </h1>
+        </div>
     </div>
     <div class="forms my-3">
         <form action="{{ url_for('hash') }}" method="POST">
@@ -25,10 +25,10 @@ Password Generator
                 </div>
             </div>
             <div class="row">
-                <div class="col">
+                <div class="col-md-12 col-lg-6">
                     {{ wtf.form_field(form.username) }}
                 </div>
-                <div class="col">
+                <div class="col-md-12 col-lg-6">
                     {{ wtf.form_field(form.website) }}
                 </div>
             </div>
@@ -51,6 +51,11 @@ Password Generator
         </form>
     </div>
 </div>
+
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/cyborg/bootstrap.min.css" integrity="sha384-nEnU7Ae+3lD52AK+RGNzgieBWMnEfgTbRHIwEvp1XXPdqdO6uLTd/NwXbzboqjc2" crossorigin="anonymous">
 <script>
     function valueChanged() {
         if ($('#password_length').is(":checked"))
