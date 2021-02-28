@@ -4,7 +4,7 @@ import string
 from flask_bootstrap import Bootstrap
 from flask import Flask, render_template, request, url_for, redirect
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, IntegerField
+from wtforms import StringField, PasswordField, IntegerField, BooleanField
 from wtforms.validators import InputRequired, Length, Optional
 from wtforms.widgets import html5 as h5widgets
 
@@ -25,10 +25,11 @@ class PasswordForm(FlaskForm):
         'Master Password', validators=[InputRequired()])
     username = StringField('Username', validators=[InputRequired()])
     website = StringField('Website', validators=[InputRequired()])
+    password_length = BooleanField("Limit Password Length", id="password_length",  validators=[Optional()], render_kw={"onclick": "valueChanged()"})
     password_length_min = IntegerField('Minimum Password Length', widget=h5widgets.NumberInput(
-        min=0, max=120),  validators=[Optional()])
+        min=0, max=120),  validators=[Optional()], default=10)
     password_length_max = IntegerField('Maximum Password Length', widget=h5widgets.NumberInput(
-        min=0, max=120),  validators=[Optional()])
+        min=0, max=120),  validators=[Optional()], default=25)
 
 
 def generate_password(masterpassword, username, website, min_length=10, max_length=25):
@@ -49,7 +50,6 @@ def generate_password(masterpassword, username, website, min_length=10, max_leng
 
     return password
 
-
 @app.route('/')
 def index():
     form = PasswordForm()
@@ -64,17 +64,17 @@ def hash():
             masterpassword = form.masterpassword.data
             username = form.username.data
             website = form.website.data
+            password_lenght = form.password_length.data
             password_length_min = form.password_length_min.data
             password_length_max = form.password_length_max.data
 
         else:
             return redirect(request.referrer)
         
-        if password_length_min is None:
+        if not password_lenght:
             password_length_min = 10
-
-        if password_length_max is None:
             password_length_max = 25
+            print(password_lenght)
         
         password = generate_password(
                 masterpassword, username, website, password_length_min, password_length_max)

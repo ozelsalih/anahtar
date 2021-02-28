@@ -28,6 +28,11 @@ Password Generator
                 </div>
             </div>
             <div class="row">
+                <div class="col">
+                    {{ wtf.form_field(form.password_length) }}
+                </div>
+            </div>
+            <div class="row" id="length_field" style="display: none;">
                 <div class="col-6">
                     {{ wtf.form_field(form.password_length_min) }}
                 </div>
@@ -39,4 +44,12 @@ Password Generator
         </form>
     </div>
 </div>
+<script>
+    function valueChanged() {
+        if ($('#password_length').is(":checked"))
+            $("#length_field").show();
+        else
+            $("#length_field").hide();
+    }
+</script>
 {% endblock %}
