@@ -27,8 +27,10 @@ Password Generator
                     {{ wtf.form_field(form.website) }}
                 </div>
             </div>
-            <div class="row">
+            <div class="row my-3">
                 <div class="col">
+                    {{ wtf.form_field(form.numbers) }}
+                    {{ wtf.form_field(form.special_chars) }}
                     {{ wtf.form_field(form.password_length) }}
                 </div>
             </div>

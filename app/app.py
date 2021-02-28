@@ -25,16 +25,17 @@ class PasswordForm(FlaskForm):
         'Master Password', validators=[InputRequired()])
     username = StringField('Username', validators=[InputRequired()])
     website = StringField('Website', validators=[InputRequired()])
-    password_length = BooleanField("Limit Password Length", id="password_length",  validators=[Optional()], render_kw={"onclick": "valueChanged()"})
+    numbers = BooleanField("Numbers",  validators=[Optional()], default=1)
+    special_chars = BooleanField("Special Characters", validators=[Optional()], default=1)
+    password_length = BooleanField("Limit Password Length (Default 10-25)", id="password_length",  validators=[Optional()], render_kw={"onclick": "valueChanged()"})
     password_length_min = IntegerField('Minimum Password Length', widget=h5widgets.NumberInput(
         min=0, max=120),  validators=[Optional()], default=10)
     password_length_max = IntegerField('Maximum Password Length', widget=h5widgets.NumberInput(
         min=0, max=120),  validators=[Optional()], default=25)
 
 
-def generate_password(masterpassword, username, website, min_length=10, max_length=25):
-    alphabet = string.ascii_letters + string.digits + "-_*$/%}."
-
+def generate_password(masterpassword, username, website, alphabet, min_length=10, max_length=25):
+    
     seed = hashlib.sha3_512()
     seed.update(bytes(username, encoding="utf-8"))
     seed.update(bytes(website, encoding="utf-8"))
@@ -59,11 +60,17 @@ def index():
 @app.route('/hash', methods=['POST', 'GET'])
 def hash():
     if request.method == 'POST':
+        alphabet = string.ascii_letters
+        digits = string.digits
+        chars = "!\"#$%&'()*+,-./:;<?@[\]^_`{|}~"
+
         form = PasswordForm()
         if form.validate_on_submit():
             masterpassword = form.masterpassword.data
             username = form.username.data
             website = form.website.data
+            numbers = form.numbers.data
+            special_chars = form.special_chars.data
             password_lenght = form.password_length.data
             password_length_min = form.password_length_min.data
             password_length_max = form.password_length_max.data
@@ -76,8 +83,14 @@ def hash():
             password_length_max = 25
             print(password_lenght)
         
+        if numbers:
+            alphabet = alphabet + digits
+
+        if special_chars:
+            alphabet = alphabet + chars
+
         password = generate_password(
-                masterpassword, username, website, password_length_min, password_length_max)
+                masterpassword, username, website, alphabet, password_length_min, password_length_max)
         
         return render_template("hash.html", password=password)
     else:
