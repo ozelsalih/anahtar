@@ -34,7 +34,11 @@ class PasswordForm(FlaskForm):
         min=0, max=120),  validators=[Optional()], default=25)
 
 
-def generate_password(masterpassword, username, website, alphabet, min_length=10, max_length=25):
+def generate_password(masterpassword, username, website, numbers, special_chars, min_length=10, max_length=25):  
+    alphabet = string.ascii_letters
+    digits = string.digits
+    chars = "!\"#$%&'()*+,-./:;<?@[\]^_`{|}~"
+
     seed = hashlib.sha3_512()
     seed.update(bytes(username, encoding="utf-8"))
     seed.update(bytes(website, encoding="utf-8"))
@@ -44,9 +48,22 @@ def generate_password(masterpassword, username, website, alphabet, min_length=10
     random.seed(seed)
 
     password_lenght = random.randint(min_length, max_length)
+    password = ''
+    if numbers:
+        password += ''.join(
+        map(lambda x: random.choice(digits), range(3)))
+        password_lenght -= 3
 
-    password = ''.join(
+    if special_chars:
+        password += ''.join(
+        map(lambda x: random.choice(chars), range(2)))
+        password_lenght -= 2
+    
+    
+    password += ''.join(
         map(lambda x: random.choice(alphabet), range(password_lenght)))
+
+    password = ''.join(random.sample(password, len(password)))
 
     return password
 
@@ -59,9 +76,6 @@ def index():
 @app.route('/hash', methods=['POST', 'GET'])
 def hash():
     if request.method == 'POST':
-        alphabet = string.ascii_letters
-        digits = string.digits
-        chars = "!\"#$%&'()*+,-./:;<?@[\]^_`{|}~"
 
         form = PasswordForm()
         if form.validate_on_submit():
@@ -80,15 +94,9 @@ def hash():
         if not password_lenght:
             password_length_min = 10
             password_length_max = 25
-        
-        if numbers:
-            alphabet = alphabet + digits
-
-        if special_chars:
-            alphabet = alphabet + chars
 
         password = generate_password(
-                masterpassword, username, website, alphabet, password_length_min, password_length_max)
+                masterpassword, username, website, numbers, special_chars, password_length_min, password_length_max)
         
         return render_template("hash.html", password=password)
 
