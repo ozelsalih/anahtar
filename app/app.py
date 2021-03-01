@@ -5,51 +5,75 @@ from flask_bootstrap import Bootstrap
 from flask import Flask, render_template, request, url_for, redirect
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, IntegerField, BooleanField
-from wtforms.validators import InputRequired, Length, Optional
+from wtforms.validators import InputRequired, Optional
 from wtforms.widgets import html5 as h5widgets
 
-SECRET_KEY = ''.join(random.choices(
-    string.ascii_uppercase + string.digits, k=16))
+SECRET_KEY = "".join(random.choices(string.ascii_uppercase + string.digits, k=16))
 hashed_secret_key = hashlib.sha256()
-hashed_secret_key.update(bytes(SECRET_KEY, encoding='utf-8'))
+hashed_secret_key.update(bytes(SECRET_KEY, encoding="utf-8"))
 SECRET_KEY = hashed_secret_key.hexdigest()
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = SECRET_KEY
+app.config["SECRET_KEY"] = SECRET_KEY
 
 Bootstrap(app)
 
 
 class PasswordForm(FlaskForm):
-    masterpassword = PasswordField(
-        'master password', validators=[InputRequired()])
-    username = StringField('username', validators=[InputRequired()])
-    website = StringField('website', validators=[InputRequired()])
-    numbers = BooleanField("numbers",  validators=[Optional()], default=1)
-    special_chars = BooleanField("special characters", validators=[Optional()], default=1)
-    password_length = BooleanField("limit length (default 10-25)", id="password_length",  validators=[Optional()], render_kw={"onclick": "valueChanged()"})
-    password_length_min = IntegerField('minimum length', widget=h5widgets.NumberInput(
-        min=8, max=120),  validators=[Optional()], default=10)
-    password_length_max = IntegerField('maximum length', widget=h5widgets.NumberInput(
-        min=8, max=120),  validators=[Optional()], default=25)
+    masterpassword = PasswordField("master password", validators=[InputRequired()])
+    username = StringField("username", validators=[InputRequired()])
+    website = StringField("website", validators=[InputRequired()])
+    numbers = BooleanField("numbers", validators=[Optional()], default=1)
+    special_chars = BooleanField(
+        "special characters", validators=[Optional()], default=1
+    )
+    password_length = BooleanField(
+        "limit length (default 10-25)",
+        id="password_length",
+        validators=[Optional()],
+        render_kw={"onclick": "valueChanged()"},
+    )
+    password_length_min = IntegerField(
+        "minimum length",
+        widget=h5widgets.NumberInput(min=8, max=120),
+        validators=[Optional()],
+        default=10,
+    )
+    password_length_max = IntegerField(
+        "maximum length",
+        widget=h5widgets.NumberInput(min=8, max=120),
+        validators=[Optional()],
+        default=25,
+    )
+
 
 def generate_unicode(masterpassword):
-    unicode_icon = "★✓⚐✎✗♡♤♧♘♗♖♔✙❆△◐♫♪♲"
+    unicode_icon = "★✓⚐✎✗♡♤♧♘♗♖♔✙❆△♫♪♲"
     mastepassword_as_unicode = ""
 
     seed = hashlib.sha3_512()
     seed.update(bytes(masterpassword, encoding="utf-8"))
-    
-    mastepassword_as_unicode = ''.join(
-        map(lambda x: random.choice(unicode_icon), range(3)))
-    
+
+    mastepassword_as_unicode = "".join(
+        map(lambda x: random.choice(unicode_icon), range(3))
+    )
+
     return mastepassword_as_unicode
 
-def generate_password(masterpassword, username, website, numbers, special_chars, min_length=10, max_length=25):  
+
+def generate_password(
+    masterpassword,
+    username,
+    website,
+    numbers,
+    special_chars,
+    min_length=10,
+    max_length=25,
+):
     alphabet = string.ascii_letters
     digits = string.digits
     chars = "!\"#$%&'()*+,-./:;<?@[\]^_`{|}~"
-    password = ''
+    password = ""
 
     seed = hashlib.sha3_512()
     seed.update(bytes(username, encoding="utf-8"))
@@ -61,30 +85,28 @@ def generate_password(masterpassword, username, website, numbers, special_chars,
 
     password_lenght = random.randint(min_length, max_length)
     if numbers:
-        password += ''.join(
-        map(lambda x: random.choice(digits), range(3)))
+        password += "".join(map(lambda x: random.choice(digits), range(3)))
         password_lenght -= 3
 
     if special_chars:
-        password += ''.join(
-        map(lambda x: random.choice(chars), range(2)))
+        password += "".join(map(lambda x: random.choice(chars), range(2)))
         password_lenght -= 2
-    
-    password += ''.join(
-        map(lambda x: random.choice(alphabet), range(password_lenght)))
-    password = ''.join(random.sample(password, len(password)))
-    
+
+    password += "".join(map(lambda x: random.choice(alphabet), range(password_lenght)))
+    password = "".join(random.sample(password, len(password)))
+
     return password
 
-@app.route('/')
+
+@app.route("/")
 def index():
     form = PasswordForm()
     return render_template("index.html", form=form)
 
 
-@app.route('/hash', methods=['POST', 'GET'])
+@app.route("/hash", methods=["POST", "GET"])
 def hash():
-    if request.method == 'POST':
+    if request.method == "POST":
 
         form = PasswordForm()
         if form.validate_on_submit():
@@ -99,17 +121,26 @@ def hash():
 
         else:
             return redirect(request.referrer)
-        
+
         if not password_lenght:
             password_length_min = 10
             password_length_max = 25
 
         password = generate_password(
-                masterpassword, username, website, numbers, special_chars, password_length_min, password_length_max)
-        
+            masterpassword,
+            username,
+            website,
+            numbers,
+            special_chars,
+            password_length_min,
+            password_length_max,
+        )
+
         mastepassword_as_unicode = generate_unicode(masterpassword)
-        
-        return render_template("hash.html", password=password, unicode=mastepassword_as_unicode)
+
+        return render_template(
+            "hash.html", password=password, unicode=mastepassword_as_unicode
+        )
 
     else:
-        return redirect('/')
+        return redirect("/")
