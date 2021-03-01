@@ -27,17 +27,29 @@ class PasswordForm(FlaskForm):
     website = StringField('website', validators=[InputRequired()])
     numbers = BooleanField("numbers",  validators=[Optional()], default=1)
     special_chars = BooleanField("special characters", validators=[Optional()], default=1)
-    password_length = BooleanField("limit password length (default 10-25)", id="password_length",  validators=[Optional()], render_kw={"onclick": "valueChanged()"})
-    password_length_min = IntegerField('minimum password length', widget=h5widgets.NumberInput(
-        min=0, max=120),  validators=[Optional()], default=10)
-    password_length_max = IntegerField('maximum password length', widget=h5widgets.NumberInput(
-        min=0, max=120),  validators=[Optional()], default=25)
+    password_length = BooleanField("limit length (default 10-25)", id="password_length",  validators=[Optional()], render_kw={"onclick": "valueChanged()"})
+    password_length_min = IntegerField('minimum length', widget=h5widgets.NumberInput(
+        min=8, max=120),  validators=[Optional()], default=10)
+    password_length_max = IntegerField('maximum length', widget=h5widgets.NumberInput(
+        min=8, max=120),  validators=[Optional()], default=25)
 
+def generate_unicode(masterpassword):
+    unicode_icon = "★✓⚐✎✗♡♤♧♘♗♖♔✙❆△◐♫♪♲"
+    mastepassword_as_unicode = ""
+
+    seed = hashlib.sha3_512()
+    seed.update(bytes(masterpassword, encoding="utf-8"))
+    
+    mastepassword_as_unicode = ''.join(
+        map(lambda x: random.choice(unicode_icon), range(3)))
+    
+    return mastepassword_as_unicode
 
 def generate_password(masterpassword, username, website, numbers, special_chars, min_length=10, max_length=25):  
     alphabet = string.ascii_letters
     digits = string.digits
     chars = "!\"#$%&'()*+,-./:;<?@[\]^_`{|}~"
+    password = ''
 
     seed = hashlib.sha3_512()
     seed.update(bytes(username, encoding="utf-8"))
@@ -48,7 +60,6 @@ def generate_password(masterpassword, username, website, numbers, special_chars,
     random.seed(seed)
 
     password_lenght = random.randint(min_length, max_length)
-    password = ''
     if numbers:
         password += ''.join(
         map(lambda x: random.choice(digits), range(3)))
@@ -59,12 +70,10 @@ def generate_password(masterpassword, username, website, numbers, special_chars,
         map(lambda x: random.choice(chars), range(2)))
         password_lenght -= 2
     
-    
     password += ''.join(
         map(lambda x: random.choice(alphabet), range(password_lenght)))
-
     password = ''.join(random.sample(password, len(password)))
-
+    
     return password
 
 @app.route('/')
@@ -98,7 +107,9 @@ def hash():
         password = generate_password(
                 masterpassword, username, website, numbers, special_chars, password_length_min, password_length_max)
         
-        return render_template("hash.html", password=password)
+        mastepassword_as_unicode = generate_unicode(masterpassword)
+        
+        return render_template("hash.html", password=password, unicode=mastepassword_as_unicode)
 
     else:
         return redirect('/')
