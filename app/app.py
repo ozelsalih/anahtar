@@ -22,20 +22,19 @@ Bootstrap(app)
 
 class PasswordForm(FlaskForm):
     masterpassword = PasswordField(
-        'Master Password', validators=[InputRequired()])
-    username = StringField('Username', validators=[InputRequired()])
-    website = StringField('Website', validators=[InputRequired()])
-    numbers = BooleanField("Numbers",  validators=[Optional()], default=1)
-    special_chars = BooleanField("Special Characters", validators=[Optional()], default=1)
-    password_length = BooleanField("Limit Password Length (Default 10-25)", id="password_length",  validators=[Optional()], render_kw={"onclick": "valueChanged()"})
-    password_length_min = IntegerField('Minimum Password Length', widget=h5widgets.NumberInput(
+        'master password', validators=[InputRequired()])
+    username = StringField('username', validators=[InputRequired()])
+    website = StringField('website', validators=[InputRequired()])
+    numbers = BooleanField("numbers",  validators=[Optional()], default=1)
+    special_chars = BooleanField("special characters", validators=[Optional()], default=1)
+    password_length = BooleanField("limit password length (default 10-25)", id="password_length",  validators=[Optional()], render_kw={"onclick": "valueChanged()"})
+    password_length_min = IntegerField('minimum password length', widget=h5widgets.NumberInput(
         min=0, max=120),  validators=[Optional()], default=10)
-    password_length_max = IntegerField('Maximum Password Length', widget=h5widgets.NumberInput(
+    password_length_max = IntegerField('maximum password length', widget=h5widgets.NumberInput(
         min=0, max=120),  validators=[Optional()], default=25)
 
 
 def generate_password(masterpassword, username, website, alphabet, min_length=10, max_length=25):
-    
     seed = hashlib.sha3_512()
     seed.update(bytes(username, encoding="utf-8"))
     seed.update(bytes(website, encoding="utf-8"))
