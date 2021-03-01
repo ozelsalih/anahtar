@@ -1,6 +1,6 @@
 # anahtar
 > [anahtar](https://anahtar.me) is a tool for generating all your passwords with a single masterpassword.
-> As it is still in development, it is not currently suitable for use.
+> _As it is still in development, it is not currently suitable for use._
 
 ## Table of contents
 - [General info](#general-info)
