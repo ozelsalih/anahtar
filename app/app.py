@@ -72,25 +72,35 @@ def generate_password(
 ):
     alphabet = string.ascii_letters
     digits = string.digits
-    chars = "!\"#$%&'()*+,-./:;<?@[\]^_`{|}~"
+    chars = "!\"#$%&'()*+-./:;<?@[\]^_`{|}"
     password = ""
 
-    seed = hashlib.sha3_512()
-    seed.update(bytes(username, encoding="utf-8"))
-    seed.update(bytes(website, encoding="utf-8"))
-    seed.update(bytes(masterpassword, encoding="utf-8"))
-    seed = seed.hexdigest()
+    sha3 = hashlib.sha3_512()
+    sha3.update(bytes(username, encoding="utf-8"))
+    sha3.update(bytes(website, encoding="utf-8"))
+    sha3.update(bytes(masterpassword, encoding="utf-8"))
+    sha3 = sha3.hexdigest()
+
+    blake2s = hashlib.blake2s()
+    blake2s.update(bytes(sha3, encoding="utf-8"))
+    blake2s = blake2s.hexdigest()
+
+    md5 = hashlib.md5()
+    md5.update(bytes(blake2s, encoding="utf-8"))
+
+    seed = md5.hexdigest()
 
     random.seed(seed)
 
     password_lenght = random.randint(min_length, max_length)
+
     if numbers:
         password += "".join(map(lambda x: random.choice(digits), range(3)))
         password_lenght -= 3
 
     if special_chars:
-        password += "".join(map(lambda x: random.choice(chars), range(2)))
-        password_lenght -= 2
+        password += "".join(map(lambda x: random.choice(chars), range(3)))
+        password_lenght -= 3
 
     password += "".join(map(lambda x: random.choice(alphabet), range(password_lenght)))
     password = "".join(random.sample(password, len(password)))
